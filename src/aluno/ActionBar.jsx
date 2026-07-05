@@ -1,4 +1,5 @@
 import Button from '../components/ui/Button';
+import HintButton from './HintButton';
 
 export default function ActionBar({
   showCode,
@@ -17,7 +18,7 @@ export default function ActionBar({
         <Button variant="ghost" onClick={onReset}>
           Resetar Desafio
         </Button>
-        {/* Espaço reservado para o botão Dica (Task 13) */}
+        <HintButton />
       </div>
       <div className="flex flex-wrap gap-3">
         <Button variant="primary" onClick={onVerify}>
