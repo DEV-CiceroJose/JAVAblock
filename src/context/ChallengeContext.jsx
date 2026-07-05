@@ -101,21 +101,22 @@ export function ChallengeProvider({ children }) {
 
   const creditarXP = useCallback(
     (xp) => {
+      let novosToasts = [];
       setGrupos((prevGrupos) => {
         const liderAntes = sortRanking(prevGrupos)[0]?.nome;
         const novosGrupos = addXP(prevGrupos, GRUPO_ATIVO, xp);
         const liderDepois = sortRanking(novosGrupos)[0]?.nome;
 
-        const novosToasts = [
+        novosToasts = [
           { id: newId(), text: `Grupo ${GRUPO_ATIVO} concluiu o desafio.` }
         ];
         if (liderDepois && liderDepois !== liderAntes) {
           novosToasts.push({ id: newId(), text: `${liderDepois} assumiu a liderança.` });
         }
-        setToasts((prev) => [...prev, ...novosToasts]);
 
         return novosGrupos;
       });
+      setToasts((prev) => [...prev, ...novosToasts]);
     },
     [setGrupos]
   );
