@@ -3,11 +3,14 @@ import { DndContext, closestCenter } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
 import { useChallenge } from '../context/ChallengeContext.jsx';
 import { validate } from '../engine/validator.js';
+import { computeXP } from '../gamification/scoring.js';
+import { CHALLENGES } from '../data/challenges.js';
 import ChallengeHeader from './ChallengeHeader.jsx';
 import BlockLibrary from './BlockLibrary.jsx';
 import Workspace from './Workspace.jsx';
 import CodePanel from './CodePanel.jsx';
 import ActionBar from './ActionBar.jsx';
+import SuccessOverlay from './SuccessOverlay.jsx';
 
 const TABS = [
   { key: 'biblioteca', label: 'Biblioteca' },
@@ -16,14 +19,27 @@ const TABS = [
 ];
 
 export default function ChallengeScreen() {
-  const { instances, moveInstances, addBlock, reset, challenge, goNext, registerWrong } =
-    useChallenge();
+  const {
+    instances,
+    moveInstances,
+    addBlock,
+    reset,
+    challenge,
+    goNext,
+    registerWrong,
+    hintsUsed,
+    wrongAttempts
+  } = useChallenge();
 
   const [highlightedId, setHighlightedId] = useState(null);
   const [showCode, setShowCode] = useState(true);
   const [completed, setCompleted] = useState(false);
   const [message, setMessage] = useState(null);
   const [activeTab, setActiveTab] = useState('montagem');
+  const [earnedXp, setEarnedXp] = useState(0);
+  const [overlayOpen, setOverlayOpen] = useState(false);
+
+  const isLast = challenge?.id === CHALLENGES[CHALLENGES.length - 1].id;
 
   function handleDragEnd(event) {
     const { active, over } = event;
@@ -47,14 +63,25 @@ export default function ChallengeScreen() {
     setCompleted(false);
     setMessage(null);
     setHighlightedId(null);
+    setOverlayOpen(false);
   }
 
   function handleVerify() {
     const result = validate(instances, challenge);
-    setMessage(result);
     if (result.ok) {
       setCompleted(true);
+      setMessage(null);
+      const xp = computeXP({
+        hintsUsed,
+        wrongAttempts,
+        forbiddenUsed: 0,
+        firstTry: wrongAttempts === 0
+      });
+      setEarnedXp(xp);
+      setOverlayOpen(true);
+      // Task 15: creditar earnedXp ao grupo ativo no ranking
     } else {
+      setMessage(result);
       registerWrong();
     }
   }
@@ -64,6 +91,7 @@ export default function ChallengeScreen() {
     setCompleted(false);
     setMessage(null);
     setHighlightedId(null);
+    setOverlayOpen(false);
   }
 
   const libraryColumn = <BlockLibrary />;
@@ -138,6 +166,8 @@ export default function ChallengeScreen() {
         onNext={handleNext}
         canAdvance={completed}
       />
+
+      <SuccessOverlay open={overlayOpen} xp={earnedXp} onNext={handleNext} isLast={isLast} />
     </div>
   );
 }
