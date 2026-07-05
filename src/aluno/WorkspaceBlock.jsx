@@ -1,18 +1,23 @@
 import { getBlock, CATEGORIES } from '../data/blocks.js';
 import { useChallenge } from '../context/ChallengeContext.jsx';
 
-export default function WorkspaceBlock({ node }) {
+export default function WorkspaceBlock({ node, highlightedId, onHover }) {
   const { removeInstance, updateField } = useChallenge();
   const blockDef = getBlock(node.blockId);
   if (!blockDef) return null;
 
   const category = CATEGORIES.find((c) => c.key === blockDef.category);
   const color = category ? category.color : '#4f8cff';
+  const isHighlighted = Boolean(highlightedId) && node.instanceId === highlightedId;
 
   return (
     <div
-      className="rounded-md border border-base-border bg-base-panel overflow-hidden"
+      className={`rounded-md border bg-base-panel overflow-hidden transition-colors ${
+        isHighlighted ? 'border-accent ring-1 ring-accent' : 'border-base-border'
+      }`}
       style={{ borderLeft: `4px solid ${color}` }}
+      onMouseEnter={() => onHover?.(node.instanceId)}
+      onMouseLeave={() => onHover?.(null)}
     >
       <div className="flex items-center justify-between gap-2 px-3 py-2">
         <span className="text-sm font-semibold text-slate-100">{blockDef.label}</span>
@@ -48,7 +53,12 @@ export default function WorkspaceBlock({ node }) {
           {node.children && node.children.length > 0 ? (
             <div className="flex flex-col gap-2 py-2">
               {node.children.map((child) => (
-                <WorkspaceBlock key={child.instanceId} node={child} />
+                <WorkspaceBlock
+                  key={child.instanceId}
+                  node={child}
+                  highlightedId={highlightedId}
+                  onHover={onHover}
+                />
               ))}
             </div>
           ) : (

@@ -1,0 +1,32 @@
+import Button from '../components/ui/Button';
+
+export default function ActionBar({
+  showCode,
+  onToggleCode,
+  onReset,
+  onVerify,
+  onNext,
+  canAdvance
+}) {
+  return (
+    <div className="sticky bottom-0 bg-base-panel border border-base-border rounded-xl p-3 mt-4 flex flex-wrap gap-3 items-center justify-between">
+      <div className="flex flex-wrap gap-3">
+        <Button variant="ghost" onClick={onToggleCode}>
+          {showCode ? 'Ocultar Código' : 'Mostrar Código'}
+        </Button>
+        <Button variant="ghost" onClick={onReset}>
+          Resetar Desafio
+        </Button>
+        {/* Espaço reservado para o botão Dica (Task 13) */}
+      </div>
+      <div className="flex flex-wrap gap-3">
+        <Button variant="primary" onClick={onVerify}>
+          Verificar Resposta
+        </Button>
+        <Button variant="success" onClick={onNext} disabled={!canAdvance}>
+          Próximo Desafio
+        </Button>
+      </div>
+    </div>
+  );
+}
