@@ -11,6 +11,8 @@ import Workspace from './Workspace.jsx';
 import CodePanel from './CodePanel.jsx';
 import ActionBar from './ActionBar.jsx';
 import SuccessOverlay from './SuccessOverlay.jsx';
+import RankingPanel from './RankingPanel.jsx';
+import Toast from './Toast.jsx';
 
 const TABS = [
   { key: 'biblioteca', label: 'Biblioteca' },
@@ -28,7 +30,8 @@ export default function ChallengeScreen() {
     goNext,
     registerWrong,
     hintsUsed,
-    wrongAttempts
+    wrongAttempts,
+    creditarXP
   } = useChallenge();
 
   const [highlightedId, setHighlightedId] = useState(null);
@@ -38,6 +41,7 @@ export default function ChallengeScreen() {
   const [activeTab, setActiveTab] = useState('montagem');
   const [earnedXp, setEarnedXp] = useState(0);
   const [overlayOpen, setOverlayOpen] = useState(false);
+  const [xpCredited, setXpCredited] = useState(false);
 
   const isLast = challenge?.id === CHALLENGES[CHALLENGES.length - 1].id;
 
@@ -64,6 +68,7 @@ export default function ChallengeScreen() {
     setMessage(null);
     setHighlightedId(null);
     setOverlayOpen(false);
+    setXpCredited(false);
   }
 
   function handleVerify() {
@@ -80,6 +85,10 @@ export default function ChallengeScreen() {
       setEarnedXp(xp);
       setOverlayOpen(true);
       // Task 15: creditar earnedXp ao grupo ativo no ranking
+      if (!xpCredited) {
+        creditarXP(xp);
+        setXpCredited(true);
+      }
     } else {
       setMessage(result);
       registerWrong();
@@ -92,6 +101,7 @@ export default function ChallengeScreen() {
     setMessage(null);
     setHighlightedId(null);
     setOverlayOpen(false);
+    setXpCredited(false);
   }
 
   const libraryColumn = <BlockLibrary />;
@@ -111,6 +121,7 @@ export default function ChallengeScreen() {
   return (
     <div className="min-h-screen bg-base-bg text-slate-100 p-4 md:p-6 flex flex-col">
       <ChallengeHeader challenge={challenge} />
+      <RankingPanel />
 
       {message && (
         <div
@@ -168,6 +179,7 @@ export default function ChallengeScreen() {
       />
 
       <SuccessOverlay open={overlayOpen} xp={earnedXp} onNext={handleNext} isLast={isLast} />
+      <Toast />
     </div>
   );
 }

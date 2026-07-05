@@ -3,6 +3,8 @@ import { CHALLENGES } from '../data/challenges.js';
 import { getBlock } from '../data/blocks.js';
 import { useLocalStorage } from '../hooks/useLocalStorage.js';
 import { newId } from '../utils/id.js';
+import { SEED_GROUPS, GRUPO_ATIVO } from '../data/groups.js';
+import { sortRanking, addXP } from '../gamification/ranking.js';
 
 const ChallengeContext = createContext(null);
 
@@ -42,6 +44,8 @@ export function ChallengeProvider({ children }) {
   const [hintsUsed, setHintsUsed] = useState(0);
   const [wrongAttempts, setWrongAttempts] = useState(0);
   const [progress, setProgress] = useLocalStorage('javablocks_progress', {});
+  const [grupos, setGrupos] = useLocalStorage('javablocks_ranking', SEED_GROUPS);
+  const [toasts, setToasts] = useState([]);
 
   const challenge = CHALLENGES[challengeIndex];
 
@@ -91,6 +95,31 @@ export function ChallengeProvider({ children }) {
     setWrongAttempts((prev) => prev + 1);
   }, []);
 
+  const dismissToast = useCallback((id) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
+
+  const creditarXP = useCallback(
+    (xp) => {
+      setGrupos((prevGrupos) => {
+        const liderAntes = sortRanking(prevGrupos)[0]?.nome;
+        const novosGrupos = addXP(prevGrupos, GRUPO_ATIVO, xp);
+        const liderDepois = sortRanking(novosGrupos)[0]?.nome;
+
+        const novosToasts = [
+          { id: newId(), text: `Grupo ${GRUPO_ATIVO} concluiu o desafio.` }
+        ];
+        if (liderDepois && liderDepois !== liderAntes) {
+          novosToasts.push({ id: newId(), text: `${liderDepois} assumiu a liderança.` });
+        }
+        setToasts((prev) => [...prev, ...novosToasts]);
+
+        return novosGrupos;
+      });
+    },
+    [setGrupos]
+  );
+
   const value = useMemo(
     () => ({
       instances,
@@ -105,9 +134,32 @@ export function ChallengeProvider({ children }) {
       useHint,
       wrongAttempts,
       registerWrong,
-      progress
+      progress,
+      grupos,
+      grupoAtivo: GRUPO_ATIVO,
+      creditarXP,
+      toasts,
+      dismissToast
     }),
-    [instances, addBlock, removeInstance, moveInstances, updateField, reset, challenge, goNext, hintsUsed, useHint, wrongAttempts, registerWrong, progress]
+    [
+      instances,
+      addBlock,
+      removeInstance,
+      moveInstances,
+      updateField,
+      reset,
+      challenge,
+      goNext,
+      hintsUsed,
+      useHint,
+      wrongAttempts,
+      registerWrong,
+      progress,
+      grupos,
+      creditarXP,
+      toasts,
+      dismissToast
+    ]
   );
 
   return <ChallengeContext.Provider value={value}>{children}</ChallengeContext.Provider>;
