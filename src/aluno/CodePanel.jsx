@@ -7,11 +7,11 @@ export default function CodePanel({ instances, highlightedId, onHoverLine, onLin
   if (!visible) return null;
 
   return (
-    <div className="flex-1 h-full overflow-y-auto bg-base-panel border border-base-border rounded-xl p-4">
+    <div className="flex-1 h-full max-h-full min-w-0 overflow-y-auto overflow-x-hidden bg-base-panel border border-base-border rounded-xl p-4">
       <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-400 mb-3">
         Código Java
       </h2>
-      <pre className="overflow-x-auto text-sm font-mono leading-relaxed bg-base-bg rounded-md border border-base-border">
+      <pre className="overflow-x-auto max-w-full text-sm font-mono leading-relaxed bg-base-bg rounded-md border border-base-border">
         <code>
           {lines.map((line, index) => {
             const isHighlighted = Boolean(line.instanceId) && line.instanceId === highlightedId;

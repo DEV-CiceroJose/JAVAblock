@@ -29,7 +29,7 @@ export default function Workspace({ highlightedId, onHover }) {
   const { instances } = useChallenge();
 
   return (
-    <div className="flex-1 h-full overflow-y-auto bg-base-panel border border-base-border rounded-xl p-4">
+    <div className="flex-1 h-full max-h-full min-w-0 overflow-y-auto overflow-x-hidden bg-base-panel border border-base-border rounded-xl p-4">
       <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-400 mb-3">
         Área de Montagem
       </h2>

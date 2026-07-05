@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 import { DndContext, closestCenter } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
 import { useChallenge } from '../context/ChallengeContext.jsx';
@@ -119,13 +120,19 @@ export default function ChallengeScreen() {
   );
 
   return (
-    <div className="min-h-screen bg-base-bg text-slate-100 p-4 md:p-6 flex flex-col">
-      <ChallengeHeader challenge={challenge} />
-      <RankingPanel />
+    <div className="min-h-screen bg-base-bg text-slate-100 p-3 sm:p-4 md:p-6 flex flex-col overflow-x-hidden">
+      <motion.div
+        initial={{ opacity: 0, y: -12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35, ease: 'easeOut' }}
+      >
+        <ChallengeHeader challenge={challenge} />
+        <RankingPanel />
+      </motion.div>
 
       {message && (
         <div
-          className={`rounded-lg border p-3 mb-4 text-sm ${
+          className={`rounded-lg border p-3 mb-4 text-sm break-words ${
             message.ok
               ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-300'
               : 'bg-amber-500/10 border-amber-500/40 text-amber-300'
@@ -137,13 +144,13 @@ export default function ChallengeScreen() {
 
       <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         {/* Tabs for small screens */}
-        <div className="lg:hidden mb-3 flex gap-2">
+        <div className="lg:hidden mb-3 flex gap-2 overflow-x-auto">
           {TABS.map((tab) => (
             <button
               key={tab.key}
               type="button"
               onClick={() => setActiveTab(tab.key)}
-              className={`px-3 py-1.5 rounded-md text-sm font-medium border ${
+              className={`px-3 py-1.5 rounded-md text-sm font-medium border whitespace-nowrap ${
                 activeTab === tab.key
                   ? 'bg-accent text-white border-accent'
                   : 'bg-base-panel text-slate-300 border-base-border'
@@ -154,17 +161,32 @@ export default function ChallengeScreen() {
           ))}
         </div>
 
-        <div className="flex-1 lg:grid lg:grid-cols-[16rem_1fr_1fr] gap-4 min-h-0">
-          <div className={`${activeTab === 'biblioteca' ? 'block' : 'hidden'} lg:block h-full`}>
+        <div className="flex-1 lg:grid lg:grid-cols-[16rem_1fr_1fr] gap-4 min-h-0 min-w-0">
+          <motion.div
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, ease: 'easeOut', delay: 0.05 }}
+            className={`${activeTab === 'biblioteca' ? 'block' : 'hidden'} lg:block h-full min-h-0 min-w-0`}
+          >
             {libraryColumn}
-          </div>
-          <div className={`${activeTab === 'montagem' ? 'block' : 'hidden'} lg:block h-full`}>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, ease: 'easeOut', delay: 0.1 }}
+            className={`${activeTab === 'montagem' ? 'block' : 'hidden'} lg:block h-full min-h-0 min-w-0`}
+          >
             {workspaceColumn}
-          </div>
+          </motion.div>
           {showCode && (
-            <div className={`${activeTab === 'codigo' ? 'block' : 'hidden'} lg:block h-full`}>
+            <motion.div
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35, ease: 'easeOut', delay: 0.15 }}
+              className={`${activeTab === 'codigo' ? 'block' : 'hidden'} lg:block h-full min-h-0 min-w-0`}
+            >
               {codeColumn}
-            </div>
+            </motion.div>
           )}
         </div>
       </DndContext>
