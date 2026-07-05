@@ -16,6 +16,29 @@ function defaultFields(blockDef) {
   return fields;
 }
 
+function createInstance(blockId) {
+  const blockDef = getBlock(blockId);
+  if (!blockDef) return null;
+  return {
+    instanceId: newId(),
+    blockId,
+    fields: defaultFields(blockDef),
+    children: []
+  };
+}
+
+function addChildRecursive(list, parentId, childInstance) {
+  return list.map((inst) => {
+    if (inst.instanceId === parentId) {
+      return { ...inst, children: [...(inst.children || []), childInstance] };
+    }
+    if (inst.children && inst.children.length) {
+      return { ...inst, children: addChildRecursive(inst.children, parentId, childInstance) };
+    }
+    return inst;
+  });
+}
+
 function removeRecursive(list, id) {
   return list
     .filter((inst) => inst.instanceId !== id)
@@ -50,15 +73,15 @@ export function ChallengeProvider({ children }) {
   const challenge = CHALLENGES[challengeIndex];
 
   const addBlock = useCallback((blockId) => {
-    const blockDef = getBlock(blockId);
-    if (!blockDef) return;
-    const instance = {
-      instanceId: newId(),
-      blockId,
-      fields: defaultFields(blockDef),
-      children: []
-    };
+    const instance = createInstance(blockId);
+    if (!instance) return;
     setInstances((prev) => [...prev, instance]);
+  }, []);
+
+  const addChildBlock = useCallback((parentInstanceId, blockId) => {
+    const instance = createInstance(blockId);
+    if (!instance) return;
+    setInstances((prev) => addChildRecursive(prev, parentInstanceId, instance));
   }, []);
 
   const removeInstance = useCallback((id) => {
@@ -125,6 +148,7 @@ export function ChallengeProvider({ children }) {
     () => ({
       instances,
       addBlock,
+      addChildBlock,
       removeInstance,
       moveInstances,
       updateField,
@@ -145,6 +169,7 @@ export function ChallengeProvider({ children }) {
     [
       instances,
       addBlock,
+      addChildBlock,
       removeInstance,
       moveInstances,
       updateField,

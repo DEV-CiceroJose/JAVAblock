@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { DndContext, closestCenter } from '@dnd-kit/core';
+import { DndContext, pointerWithin } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
 import { useChallenge } from '../context/ChallengeContext.jsx';
 import { validate } from '../engine/validator.js';
@@ -26,6 +26,7 @@ export default function ChallengeScreen() {
     instances,
     moveInstances,
     addBlock,
+    addChildBlock,
     reset,
     challenge,
     goNext,
@@ -50,7 +51,12 @@ export default function ChallengeScreen() {
     const { active, over } = event;
 
     if (active.data.current?.source === 'library') {
-      addBlock(active.data.current.blockId);
+      if (over && String(over.id).startsWith('container:')) {
+        const parentId = String(over.id).slice('container:'.length);
+        addChildBlock(parentId, active.data.current.blockId);
+      } else {
+        addBlock(active.data.current.blockId);
+      }
       return;
     }
 
@@ -131,18 +137,12 @@ export default function ChallengeScreen() {
       </motion.div>
 
       {message && (
-        <div
-          className={`rounded-lg border p-3 mb-4 text-sm break-words ${
-            message.ok
-              ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-300'
-              : 'bg-amber-500/10 border-amber-500/40 text-amber-300'
-          }`}
-        >
+        <div className="rounded-lg border p-3 mb-4 text-sm break-words bg-amber-500/10 border-amber-500/40 text-amber-300">
           {message.mensagem}
         </div>
       )}
 
-      <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+      <DndContext collisionDetection={pointerWithin} onDragEnd={handleDragEnd}>
         {/* Tabs for small screens */}
         <div className="lg:hidden mb-3 flex gap-2 overflow-x-auto">
           {TABS.map((tab) => (

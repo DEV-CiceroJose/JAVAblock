@@ -1,5 +1,41 @@
+import { useDroppable } from '@dnd-kit/core';
 import { getBlock, CATEGORIES } from '../data/blocks.js';
 import { useChallenge } from '../context/ChallengeContext.jsx';
+
+function ContainerDropZone({ node, highlightedId, onHover }) {
+  const { isOver, setNodeRef } = useDroppable({ id: 'container:' + node.instanceId });
+  const hasChildren = node.children && node.children.length > 0;
+
+  return (
+    <div
+      ref={setNodeRef}
+      className={`ml-4 mr-2 mb-2 pl-3 border-l-2 border-dashed rounded-sm transition-colors ${
+        isOver ? 'border-accent bg-accent/10 ring-1 ring-accent' : 'border-base-border'
+      }`}
+    >
+      {hasChildren ? (
+        <div className="flex flex-col gap-2 py-2">
+          {node.children.map((child) => (
+            <WorkspaceBlock
+              key={child.instanceId}
+              node={child}
+              highlightedId={highlightedId}
+              onHover={onHover}
+            />
+          ))}
+        </div>
+      ) : (
+        <div
+          className={`my-2 py-3 text-center text-xs border border-dashed rounded-md transition-colors ${
+            isOver ? 'border-accent text-accent' : 'border-base-border text-slate-500'
+          }`}
+        >
+          Solte blocos aqui
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function WorkspaceBlock({ node, highlightedId, onHover }) {
   const { removeInstance, updateField } = useChallenge();
@@ -49,24 +85,7 @@ export default function WorkspaceBlock({ node, highlightedId, onHover }) {
       )}
 
       {blockDef.container && (
-        <div className="ml-4 mr-2 mb-2 pl-3 border-l-2 border-dashed border-base-border">
-          {node.children && node.children.length > 0 ? (
-            <div className="flex flex-col gap-2 py-2">
-              {node.children.map((child) => (
-                <WorkspaceBlock
-                  key={child.instanceId}
-                  node={child}
-                  highlightedId={highlightedId}
-                  onHover={onHover}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="my-2 py-3 text-center text-xs text-slate-500 border border-dashed border-base-border rounded-md">
-              Solte blocos aqui
-            </div>
-          )}
-        </div>
+        <ContainerDropZone node={node} highlightedId={highlightedId} onHover={onHover} />
       )}
     </div>
   );
