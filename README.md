@@ -117,17 +117,40 @@ Se o novo desafio usar blocos que ainda não existem, adicione-os primeiro em `s
 (incluindo `category`, `label`, `fields` e `template` do bloco) e, se necessário, uma nova
 categoria em `groups.js`.
 
+## Backend (Fase 2)
+
+O backend Express + Firestore está implementado em `backend/`. Ele fornece:
+
+- **API REST** para listar desafios, submeter resultados, e gerenciar ranking
+- **Autenticação de admin** para criação e edição de desafios sem código
+- **Persistência** em Firestore (Firebase) ou modo em memória para testes locais
+- **Seed script** para popular a base com desafios iniciais
+
+O app do aluno busca desafios do backend (via `VITE_API_URL`) com fallback para dados locais se o
+servidor estiver indisponível. Para detalhes de setup, endpoints, deploy e configuração do Firebase,
+veja [`backend/README.md`](./backend/README.md).
+
+**Quick Start do Backend:**
+```bash
+cd backend
+npm install
+npm run dev              # desenvolvimento com reload automático
+# ou: npm start         # produção
+# ou: npm run seed      # popular Firestore com desafios iniciais
+```
+
+Sem credenciais do Firebase, o backend roda em modo em memória (volátil, ideal para desenvolvimento).
+
 ## Fase futura (fora do escopo desta versão)
 
 A estrutura de pastas e as constantes de domínio já foram organizadas pensando em uma evolução
 futura do produto, que inclui:
 
-- **Painel do Professor** — visão agregada do progresso de todos os grupos/turmas, criação e edição
-  de desafios pela interface (sem editar código), e relatórios de desempenho.
-- **Firebase** — substituição do `localStorage` por um backend real (Firestore/Auth), permitindo
-  múltiplas turmas, contas de aluno/professor e sincronização entre dispositivos.
-- **Deploy na Render** — publicação do app (front-end e eventual backend) em ambiente de produção
-  acessível publicamente.
+- **Painel do Professor** — visão agregada do progresso de todos os grupos/turmas e relatórios de
+  desempenho (UI para gerenciar desafios sem código).
+- **Sincronização entre dispositivos** — múltiplas turmas, contas de aluno/professor,
+  e sincronização de estado via Firestore.
+- **Deploy completo** — frontend e backend em produção (Render, Vercel ou similar).
 
 Nenhuma dessas funcionalidades está implementada nesta versão; o foco atual é a experiência do
-aluno rodando localmente, com dados estáticos e persistência apenas no navegador.
+aluno com backend opcional em Firestore.
