@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import { registerPublicRoutes } from './routes/public.js';
 
 export function createApp(repo, options = {}) {
   const app = express();
@@ -8,6 +9,8 @@ export function createApp(repo, options = {}) {
   app.use(express.json());
 
   app.get('/api/health', (req, res) => res.json({ ok: true }));
+  registerPublicRoutes(app);
+  app.locals.adminToken = options.adminToken || '';
 
   return app;
 }
