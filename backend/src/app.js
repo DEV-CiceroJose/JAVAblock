@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import { registerPublicRoutes } from './routes/public.js';
+import { registerAdminRoutes } from './routes/admin.js';
 
 export function createApp(repo, options = {}) {
   const app = express();
@@ -11,6 +12,7 @@ export function createApp(repo, options = {}) {
   app.get('/api/health', (req, res) => res.json({ ok: true }));
   registerPublicRoutes(app);
   app.locals.adminToken = options.adminToken || '';
+  registerAdminRoutes(app);
 
   return app;
 }
