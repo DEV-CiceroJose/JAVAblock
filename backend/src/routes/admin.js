@@ -3,6 +3,7 @@ import { requireAdmin } from '../middleware/auth.js';
 import * as challenges from '../services/challenges.js';
 import { getConfig, setConfig } from '../services/config.js';
 import { computeDashboard } from '../services/stats.js';
+import { wrap } from '../middleware/errors.js';
 
 export function registerAdminRoutes(app) {
   const r = Router();
@@ -11,35 +12,35 @@ export function registerAdminRoutes(app) {
 
   r.post('/verify', (req, res) => res.json({ ok: true }));
 
-  r.get('/challenges', async (req, res) => res.json(await challenges.listChallenges(repo())));
-  r.post('/challenges', async (req, res) => {
+  r.get('/challenges', wrap(async (req, res) => res.json(await challenges.listChallenges(repo()))));
+  r.post('/challenges', wrap(async (req, res) => {
     const result = await challenges.createChallenge(repo(), req.body);
     if (!result.ok) return res.status(400).json({ errors: result.errors });
     res.status(201).json(result.challenge);
-  });
-  r.put('/challenges/reorder', async (req, res) => {
+  }));
+  r.put('/challenges/reorder', wrap(async (req, res) => {
     await challenges.reorderChallenges(repo(), req.body.order || []);
     res.json({ ok: true });
-  });
-  r.put('/challenges/:id', async (req, res) => {
+  }));
+  r.put('/challenges/:id', wrap(async (req, res) => {
     const result = await challenges.updateChallenge(repo(), req.params.id, req.body);
     if (result.notFound) return res.status(404).json({ error: 'Desafio não encontrado.' });
     if (!result.ok) return res.status(400).json({ errors: result.errors });
     res.json(result.challenge);
-  });
-  r.delete('/challenges/:id', async (req, res) => {
+  }));
+  r.delete('/challenges/:id', wrap(async (req, res) => {
     const removed = await challenges.deleteChallenge(repo(), req.params.id);
     if (!removed) return res.status(404).json({ error: 'Desafio não encontrado.' });
     res.json({ ok: true });
-  });
+  }));
 
-  r.get('/config', async (req, res) => res.json(await getConfig(repo())));
-  r.put('/config', async (req, res) => res.json(await setConfig(repo(), req.body)));
+  r.get('/config', wrap(async (req, res) => res.json(await getConfig(repo()))));
+  r.put('/config', wrap(async (req, res) => res.json(await setConfig(repo(), req.body))));
 
-  r.get('/dashboard', async (req, res) => {
+  r.get('/dashboard', wrap(async (req, res) => {
     const [subs, groups] = await Promise.all([repo().listSubmissions(), repo().listGroups()]);
     res.json(computeDashboard(subs, groups));
-  });
+  }));
 
   app.use('/api/admin', r);
 }

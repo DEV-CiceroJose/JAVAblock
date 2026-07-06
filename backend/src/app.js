@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { registerPublicRoutes } from './routes/public.js';
 import { registerAdminRoutes } from './routes/admin.js';
+import { errorHandler } from './middleware/errors.js';
 
 export function createApp(repo, options = {}) {
   const app = express();
@@ -13,6 +14,7 @@ export function createApp(repo, options = {}) {
   registerPublicRoutes(app);
   app.locals.adminToken = options.adminToken || '';
   registerAdminRoutes(app);
+  app.use(errorHandler);
 
   return app;
 }
