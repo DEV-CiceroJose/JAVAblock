@@ -1,10 +1,11 @@
-import { createContext, useContext, useState, useMemo, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
 import { CHALLENGES } from '../data/challenges.js';
 import { getBlock } from '../data/blocks.js';
 import { useLocalStorage } from '../hooks/useLocalStorage.js';
 import { newId } from '../utils/id.js';
 import { SEED_GROUPS, GRUPO_ATIVO } from '../data/groups.js';
 import { sortRanking, addXP } from '../gamification/ranking.js';
+import { fetchChallenges } from '../services/api.js';
 
 const ChallengeContext = createContext(null);
 
@@ -69,8 +70,19 @@ export function ChallengeProvider({ children }) {
   const [progress, setProgress] = useLocalStorage('javablocks_progress', {});
   const [grupos, setGrupos] = useLocalStorage('javablocks_ranking', SEED_GROUPS);
   const [toasts, setToasts] = useState([]);
+  const [desafios, setDesafios] = useState(CHALLENGES); // fallback imediato
 
-  const challenge = CHALLENGES[challengeIndex];
+  useEffect(() => {
+    let ativo = true;
+    fetchChallenges().then((remota) => {
+      if (ativo && Array.isArray(remota) && remota.length > 0) setDesafios(remota);
+    });
+    return () => {
+      ativo = false;
+    };
+  }, []);
+
+  const challenge = desafios[challengeIndex];
 
   const addBlock = useCallback((blockId) => {
     const instance = createInstance(blockId);
@@ -104,11 +116,11 @@ export function ChallengeProvider({ children }) {
 
   const goNext = useCallback(() => {
     setProgress((prev) => ({ ...prev, [challenge.id]: true }));
-    setChallengeIndex((prev) => Math.min(prev + 1, CHALLENGES.length - 1));
+    setChallengeIndex((prev) => Math.min(prev + 1, desafios.length - 1));
     setInstances([]);
     setHintsUsed(0);
     setWrongAttempts(0);
-  }, [challenge, setProgress]);
+  }, [challenge, setProgress, desafios]);
 
   const useHint = useCallback(() => {
     setHintsUsed((prev) => prev + 1);
@@ -154,6 +166,7 @@ export function ChallengeProvider({ children }) {
       updateField,
       reset,
       challenge,
+      desafios,
       goNext,
       hintsUsed,
       useHint,
@@ -175,6 +188,7 @@ export function ChallengeProvider({ children }) {
       updateField,
       reset,
       challenge,
+      desafios,
       goNext,
       hintsUsed,
       useHint,

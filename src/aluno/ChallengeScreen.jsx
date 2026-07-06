@@ -5,7 +5,7 @@ import { arrayMove } from '@dnd-kit/sortable';
 import { useChallenge } from '../context/ChallengeContext.jsx';
 import { validate } from '../engine/validator.js';
 import { computeXP } from '../gamification/scoring.js';
-import { CHALLENGES } from '../data/challenges.js';
+import { submitResult } from '../services/api.js';
 import ChallengeHeader from './ChallengeHeader.jsx';
 import BlockLibrary from './BlockLibrary.jsx';
 import Workspace from './Workspace.jsx';
@@ -33,7 +33,9 @@ export default function ChallengeScreen() {
     registerWrong,
     hintsUsed,
     wrongAttempts,
-    creditarXP
+    creditarXP,
+    desafios,
+    grupoAtivo
   } = useChallenge();
 
   const [highlightedId, setHighlightedId] = useState(null);
@@ -45,7 +47,7 @@ export default function ChallengeScreen() {
   const [overlayOpen, setOverlayOpen] = useState(false);
   const [xpCredited, setXpCredited] = useState(false);
 
-  const isLast = challenge?.id === CHALLENGES[CHALLENGES.length - 1].id;
+  const isLast = challenge?.id === desafios[desafios.length - 1]?.id;
 
   function handleDragEnd(event) {
     const { active, over } = event;
@@ -95,6 +97,18 @@ export default function ChallengeScreen() {
       if (!xpCredited) {
         creditarXP(xp);
         setXpCredited(true);
+        // Task 10: envio fire-and-forget do resultado ao backend (no-op sem VITE_API_URL)
+        const categoria = challenge.modulo != null ? String(challenge.modulo) : 'geral';
+        submitResult({
+          grupo: grupoAtivo,
+          challengeId: challenge.id,
+          categoria,
+          xp,
+          dicasUsadas: hintsUsed,
+          tentativas: wrongAttempts + 1,
+          tempoSegundos: 0,
+          acertou: true
+        });
       }
     } else {
       setMessage(result);
