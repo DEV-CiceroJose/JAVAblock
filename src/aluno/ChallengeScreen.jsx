@@ -1,7 +1,16 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { DndContext, pointerWithin } from '@dnd-kit/core';
-import { arrayMove } from '@dnd-kit/sortable';
+import {
+  DndContext,
+  pointerWithin,
+  closestCenter,
+  rectIntersection,
+  PointerSensor,
+  KeyboardSensor,
+  useSensor,
+  useSensors
+} from '@dnd-kit/core';
+import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { useChallenge } from '../context/ChallengeContext.jsx';
 import { validate } from '../engine/validator.js';
 import { computeXP } from '../gamification/scoring.js';
@@ -21,11 +30,32 @@ const TABS = [
   { key: 'codigo', label: 'Código' }
 ];
 
+// Colisão combinada:
+// - Arrastar da biblioteca: usa o ponteiro (pointerWithin) para acertar containers
+//   e posições; cai para rectIntersection quando o ponteiro está em um vão.
+// - Reordenar blocos existentes: ignora as zonas de container e usa closestCenter
+//   entre os irmãos, que é o esperado por verticalListSortingStrategy.
+function combinedCollision(args) {
+  const isLibrary = args.active?.data?.current?.source === 'library';
+  if (isLibrary) {
+    const hits = pointerWithin(args);
+    return hits.length ? hits : rectIntersection(args);
+  }
+  const filtered = {
+    ...args,
+    droppableContainers: args.droppableContainers.filter(
+      (c) => !String(c.id).startsWith('container:')
+    )
+  };
+  return closestCenter(filtered);
+}
+
 export default function ChallengeScreen() {
   const {
     instances,
     moveInstances,
     addBlock,
+    addBlockAt,
     addChildBlock,
     reset,
     challenge,
@@ -49,15 +79,26 @@ export default function ChallengeScreen() {
 
   const isLast = challenge?.id === desafios[desafios.length - 1]?.id;
 
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
   function handleDragEnd(event) {
     const { active, over } = event;
 
     if (active.data.current?.source === 'library') {
+      const blockId = active.data.current.blockId;
       if (over && String(over.id).startsWith('container:')) {
         const parentId = String(over.id).slice('container:'.length);
-        addChildBlock(parentId, active.data.current.blockId);
+        addChildBlock(parentId, blockId);
+      } else if (over) {
+        // Soltou sobre um bloco de topo → insere naquela posição (não no fim).
+        const overIndex = instances.findIndex((inst) => inst.instanceId === over.id);
+        if (overIndex === -1) addBlock(blockId);
+        else addBlockAt(blockId, overIndex);
       } else {
-        addBlock(active.data.current.blockId);
+        addBlock(blockId);
       }
       return;
     }
@@ -156,7 +197,7 @@ export default function ChallengeScreen() {
         </div>
       )}
 
-      <DndContext collisionDetection={pointerWithin} onDragEnd={handleDragEnd}>
+      <DndContext sensors={sensors} collisionDetection={combinedCollision} onDragEnd={handleDragEnd}>
         {/* Tabs for small screens */}
         <div className="lg:hidden mb-3 flex gap-2 overflow-x-auto">
           {TABS.map((tab) => (

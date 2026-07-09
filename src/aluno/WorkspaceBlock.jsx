@@ -37,7 +37,7 @@ function ContainerDropZone({ node, highlightedId, onHover }) {
   );
 }
 
-export default function WorkspaceBlock({ node, highlightedId, onHover }) {
+export default function WorkspaceBlock({ node, highlightedId, onHover, dragHandleProps }) {
   const { removeInstance, updateField } = useChallenge();
   const blockDef = getBlock(node.blockId);
   if (!blockDef) return null;
@@ -56,12 +56,27 @@ export default function WorkspaceBlock({ node, highlightedId, onHover }) {
       onMouseLeave={() => onHover?.(null)}
     >
       <div className="flex items-center justify-between gap-2 px-3 py-2">
-        <span className="text-sm font-semibold text-slate-100">{blockDef.label}</span>
+        <div className="flex items-center gap-2 min-w-0">
+          {dragHandleProps && (
+            <button
+              type="button"
+              ref={dragHandleProps.setActivatorNodeRef}
+              {...dragHandleProps.attributes}
+              {...dragHandleProps.listeners}
+              aria-label="Arrastar bloco"
+              title="Arraste para mover"
+              className="cursor-grab active:cursor-grabbing touch-none select-none text-slate-500 hover:text-slate-200 leading-none px-1"
+            >
+              ⠿
+            </button>
+          )}
+          <span className="text-sm font-semibold text-slate-100 truncate">{blockDef.label}</span>
+        </div>
         <button
           type="button"
           onClick={() => removeInstance(node.instanceId)}
           aria-label="Remover bloco"
-          className="text-slate-400 hover:text-red-400 transition text-lg leading-none px-1"
+          className="text-slate-400 hover:text-red-400 transition text-lg leading-none px-1 shrink-0"
         >
           ×
         </button>

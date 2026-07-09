@@ -8,9 +8,15 @@ import { useChallenge } from '../context/ChallengeContext.jsx';
 import WorkspaceBlock from './WorkspaceBlock.jsx';
 
 function SortableWorkspaceBlock({ node, highlightedId, onHover }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-    id: node.instanceId
-  });
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    setActivatorNodeRef,
+    transform,
+    transition,
+    isDragging
+  } = useSortable({ id: node.instanceId });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -18,9 +24,16 @@ function SortableWorkspaceBlock({ node, highlightedId, onHover }) {
     opacity: isDragging ? 0.5 : 1
   };
 
+  // Os listeners de arraste ficam SÓ na alça (dragHandleProps), não no wrapper —
+  // assim cliques nos inputs e no botão de remover não viram arraste.
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <WorkspaceBlock node={node} highlightedId={highlightedId} onHover={onHover} />
+    <div ref={setNodeRef} style={style}>
+      <WorkspaceBlock
+        node={node}
+        highlightedId={highlightedId}
+        onHover={onHover}
+        dragHandleProps={{ attributes, listeners, setActivatorNodeRef }}
+      />
     </div>
   );
 }

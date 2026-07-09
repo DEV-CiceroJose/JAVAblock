@@ -90,6 +90,17 @@ export function ChallengeProvider({ children }) {
     setInstances((prev) => [...prev, instance]);
   }, []);
 
+  const addBlockAt = useCallback((blockId, index) => {
+    const instance = createInstance(blockId);
+    if (!instance) return;
+    setInstances((prev) => {
+      const i = index == null || index < 0 || index > prev.length ? prev.length : index;
+      const copy = [...prev];
+      copy.splice(i, 0, instance);
+      return copy;
+    });
+  }, []);
+
   const addChildBlock = useCallback((parentInstanceId, blockId) => {
     const instance = createInstance(blockId);
     if (!instance) return;
@@ -160,6 +171,7 @@ export function ChallengeProvider({ children }) {
     () => ({
       instances,
       addBlock,
+      addBlockAt,
       addChildBlock,
       removeInstance,
       moveInstances,
@@ -182,6 +194,7 @@ export function ChallengeProvider({ children }) {
     [
       instances,
       addBlock,
+      addBlockAt,
       addChildBlock,
       removeInstance,
       moveInstances,
