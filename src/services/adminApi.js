@@ -31,3 +31,32 @@ export async function verifyAdminToken(token) {
   const result = await adminRequest('/api/admin/verify', token, { method: 'POST' });
   return { ok: result.ok, error: result.error };
 }
+
+export async function listChallengesAdmin(token) {
+  return adminRequest('/api/admin/challenges', token);
+}
+
+export async function createChallenge(token, data) {
+  return adminRequest('/api/admin/challenges', token, {
+    method: 'POST',
+    body: JSON.stringify(data)
+  });
+}
+
+export async function updateChallenge(token, id, patch) {
+  return adminRequest(`/api/admin/challenges/${encodeURIComponent(id)}`, token, {
+    method: 'PUT',
+    body: JSON.stringify(patch)
+  });
+}
+
+export async function deleteChallenge(token, id) {
+  return adminRequest(`/api/admin/challenges/${encodeURIComponent(id)}`, token, { method: 'DELETE' });
+}
+
+export async function reorderChallenges(token, order) {
+  return adminRequest('/api/admin/challenges/reorder', token, {
+    method: 'PUT',
+    body: JSON.stringify({ order })
+  });
+}
