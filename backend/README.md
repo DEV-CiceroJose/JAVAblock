@@ -436,3 +436,7 @@ Para dúvidas sobre o backend, abra uma issue no repositório ou entre em contat
 
 **Versão**: 1.0.0  
 **Última atualização**: Julho de 2026
+
+## Licença
+
+© 2026 Cicero José. Todos os direitos reservados. Veja [LICENSE](../LICENSE) para os termos completos.

@@ -154,3 +154,7 @@ futura do produto, que inclui:
 
 Nenhuma dessas funcionalidades está implementada nesta versão; o foco atual é a experiência do
 aluno com backend opcional em Firestore.
+
+## Licença
+
+© 2026 Cicero José. Todos os direitos reservados. Veja [LICENSE](LICENSE) para os termos completos.
