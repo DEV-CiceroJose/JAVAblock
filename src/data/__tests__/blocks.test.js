@@ -21,4 +21,9 @@ describe('blocks', () => {
   it('getBlock devolve a definição', () => {
     expect(getBlock('print').label).toContain('println');
   });
+  it('campo "valor" de var_int/var_double é numérico', () => {
+    const campoValor = (id) => getBlock(id).fields.find((f) => f.name === 'valor');
+    expect(campoValor('var_int').type).toBe('number');
+    expect(campoValor('var_double').type).toBe('number');
+  });
 });

@@ -17,10 +17,10 @@ export const BLOCKS = [
     fields: [{ name: 'nome', label: 'nome', default: 'texto' }, { name: 'valor', label: 'valor', default: '""' }],
     template: 'String {nome} = {valor};' },
   { id: 'var_int', category: 'variaveis', label: 'int', container: false,
-    fields: [{ name: 'nome', label: 'nome', default: 'numero' }, { name: 'valor', label: 'valor', default: '0' }],
+    fields: [{ name: 'nome', label: 'nome', default: 'numero' }, { name: 'valor', label: 'valor', default: '0', type: 'number' }],
     template: 'int {nome} = {valor};' },
   { id: 'var_double', category: 'variaveis', label: 'double', container: false,
-    fields: [{ name: 'nome', label: 'nome', default: 'valor' }, { name: 'valor', label: 'valor', default: '0.0' }],
+    fields: [{ name: 'nome', label: 'nome', default: 'valor' }, { name: 'valor', label: 'valor', default: '0.0', type: 'number' }],
     template: 'double {nome} = {valor};' },
   // Entrada
   { id: 'scanner', category: 'entrada', label: 'Scanner', container: false, fields: [],

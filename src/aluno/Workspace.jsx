@@ -16,7 +16,7 @@ function SortableWorkspaceBlock({ node, highlightedId, onHover }) {
     transform,
     transition,
     isDragging
-  } = useSortable({ id: node.instanceId });
+  } = useSortable({ id: node.instanceId, data: { source: 'instance', blockId: node.blockId } });
 
   const style = {
     transform: CSS.Transform.toString(transform),

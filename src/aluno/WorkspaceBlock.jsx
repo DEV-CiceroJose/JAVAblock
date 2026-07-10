@@ -38,7 +38,7 @@ function ContainerDropZone({ node, highlightedId, onHover }) {
 }
 
 export default function WorkspaceBlock({ node, highlightedId, onHover, dragHandleProps }) {
-  const { removeInstance, updateField } = useChallenge();
+  const { removeInstance, updateField, duplicateInstance } = useChallenge();
   const blockDef = getBlock(node.blockId);
   if (!blockDef) return null;
 
@@ -72,14 +72,25 @@ export default function WorkspaceBlock({ node, highlightedId, onHover, dragHandl
           )}
           <span className="text-sm font-semibold text-slate-100 truncate">{blockDef.label}</span>
         </div>
-        <button
-          type="button"
-          onClick={() => removeInstance(node.instanceId)}
-          aria-label="Remover bloco"
-          className="text-slate-400 hover:text-red-400 transition text-lg leading-none px-1 shrink-0"
-        >
-          ×
-        </button>
+        <div className="flex items-center gap-1 shrink-0">
+          <button
+            type="button"
+            onClick={() => duplicateInstance(node.instanceId)}
+            aria-label="Duplicar bloco"
+            title="Duplicar bloco"
+            className="text-slate-400 hover:text-slate-200 transition text-sm leading-none px-1"
+          >
+            ⧉
+          </button>
+          <button
+            type="button"
+            onClick={() => removeInstance(node.instanceId)}
+            aria-label="Remover bloco"
+            className="text-slate-400 hover:text-red-400 transition text-lg leading-none px-1"
+          >
+            ×
+          </button>
+        </div>
       </div>
 
       {blockDef.fields && blockDef.fields.length > 0 && (
@@ -88,7 +99,8 @@ export default function WorkspaceBlock({ node, highlightedId, onHover, dragHandl
             <label key={field.name} className="flex flex-col text-xs text-slate-400 gap-1">
               {field.label}
               <input
-                type="text"
+                type={field.type === 'number' ? 'number' : 'text'}
+                step={field.type === 'number' ? 'any' : undefined}
                 value={node.fields[field.name] ?? ''}
                 onChange={(e) => updateField(node.instanceId, field.name, e.target.value)}
                 className="bg-base-bg border border-base-border rounded px-2 py-1 text-sm text-slate-100

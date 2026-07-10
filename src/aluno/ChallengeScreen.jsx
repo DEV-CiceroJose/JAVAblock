@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   DndContext,
+  DragOverlay,
   pointerWithin,
   closestCenter,
   rectIntersection,
@@ -12,6 +13,7 @@ import {
 } from '@dnd-kit/core';
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { useChallenge } from '../context/ChallengeContext.jsx';
+import { getBlock, CATEGORIES } from '../data/blocks.js';
 import { validate } from '../engine/validator.js';
 import { computeXP } from '../gamification/scoring.js';
 import { submitResult } from '../services/api.js';
@@ -50,6 +52,13 @@ function combinedCollision(args) {
   return closestCenter(filtered);
 }
 
+function dragPreviewFor(blockId) {
+  const blockDef = getBlock(blockId);
+  if (!blockDef) return null;
+  const category = CATEGORIES.find((c) => c.key === blockDef.category);
+  return { label: blockDef.label, color: category ? category.color : '#4f8cff' };
+}
+
 export default function ChallengeScreen() {
   const {
     instances,
@@ -76,6 +85,7 @@ export default function ChallengeScreen() {
   const [earnedXp, setEarnedXp] = useState(0);
   const [overlayOpen, setOverlayOpen] = useState(false);
   const [xpCredited, setXpCredited] = useState(false);
+  const [activeDragBlockId, setActiveDragBlockId] = useState(null);
 
   const isLast = challenge?.id === desafios[desafios.length - 1]?.id;
 
@@ -84,7 +94,16 @@ export default function ChallengeScreen() {
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
 
+  function handleDragStart(event) {
+    setActiveDragBlockId(event.active.data.current?.blockId ?? null);
+  }
+
+  function handleDragCancel() {
+    setActiveDragBlockId(null);
+  }
+
   function handleDragEnd(event) {
+    setActiveDragBlockId(null);
     const { active, over } = event;
 
     if (active.data.current?.source === 'library') {
@@ -197,7 +216,13 @@ export default function ChallengeScreen() {
         </div>
       )}
 
-      <DndContext sensors={sensors} collisionDetection={combinedCollision} onDragEnd={handleDragEnd}>
+      <DndContext
+        sensors={sensors}
+        collisionDetection={combinedCollision}
+        onDragStart={handleDragStart}
+        onDragCancel={handleDragCancel}
+        onDragEnd={handleDragEnd}
+      >
         {/* Tabs for small screens */}
         <div className="lg:hidden mb-3 flex gap-2 overflow-x-auto">
           {TABS.map((tab) => (
@@ -244,6 +269,24 @@ export default function ChallengeScreen() {
             </motion.div>
           )}
         </div>
+
+        <DragOverlay>
+          {activeDragBlockId
+            ? (() => {
+                const preview = dragPreviewFor(activeDragBlockId);
+                if (!preview) return null;
+                return (
+                  <div
+                    className="px-3 py-2 rounded-md border border-base-border bg-base-panel shadow-lg
+                      text-sm font-semibold text-slate-100 pointer-events-none"
+                    style={{ borderLeft: `4px solid ${preview.color}` }}
+                  >
+                    {preview.label}
+                  </div>
+                );
+              })()
+            : null}
+        </DragOverlay>
       </DndContext>
 
       <ActionBar

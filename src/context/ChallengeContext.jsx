@@ -62,9 +62,31 @@ function updateFieldRecursive(list, id, name, value) {
   });
 }
 
+function duplicateRecursive(list, id) {
+  const index = list.findIndex((inst) => inst.instanceId === id);
+  if (index !== -1) {
+    const original = list[index];
+    const copy = {
+      instanceId: newId(),
+      blockId: original.blockId,
+      fields: { ...original.fields },
+      children: []
+    };
+    const copyOfList = [...list];
+    copyOfList.splice(index + 1, 0, copy);
+    return copyOfList;
+  }
+  return list.map((inst) =>
+    inst.children && inst.children.length
+      ? { ...inst, children: duplicateRecursive(inst.children, id) }
+      : inst
+  );
+}
+
 export function ChallengeProvider({ children }) {
   const [challengeIndex, setChallengeIndex] = useState(0);
-  const [instances, setInstances] = useState([]);
+  const [workspaceSave, setWorkspaceSave] = useLocalStorage('javablocks_workspace', {});
+  const [instances, setInstances] = useState(() => workspaceSave[CHALLENGES[0]?.id] || []);
   const [hintsUsed, setHintsUsed] = useState(0);
   const [wrongAttempts, setWrongAttempts] = useState(0);
   const [progress, setProgress] = useLocalStorage('javablocks_progress', {});
@@ -83,6 +105,12 @@ export function ChallengeProvider({ children }) {
   }, []);
 
   const challenge = desafios[challengeIndex];
+
+  // Salva a montagem atual (por desafio) para sobreviver a um reload da página.
+  useEffect(() => {
+    if (!challenge) return;
+    setWorkspaceSave((prev) => ({ ...prev, [challenge.id]: instances }));
+  }, [instances, challenge, setWorkspaceSave]);
 
   const addBlock = useCallback((blockId) => {
     const instance = createInstance(blockId);
@@ -117,6 +145,10 @@ export function ChallengeProvider({ children }) {
 
   const updateField = useCallback((id, name, value) => {
     setInstances((prev) => updateFieldRecursive(prev, id, name, value));
+  }, []);
+
+  const duplicateInstance = useCallback((id) => {
+    setInstances((prev) => duplicateRecursive(prev, id));
   }, []);
 
   const reset = useCallback(() => {
@@ -174,6 +206,7 @@ export function ChallengeProvider({ children }) {
       addBlockAt,
       addChildBlock,
       removeInstance,
+      duplicateInstance,
       moveInstances,
       updateField,
       reset,
@@ -197,6 +230,7 @@ export function ChallengeProvider({ children }) {
       addBlockAt,
       addChildBlock,
       removeInstance,
+      duplicateInstance,
       moveInstances,
       updateField,
       reset,
