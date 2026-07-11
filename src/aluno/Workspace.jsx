@@ -6,6 +6,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { useChallenge } from '../context/ChallengeContext.jsx';
 import WorkspaceBlock from './WorkspaceBlock.jsx';
+import EmptyState from '../components/ui/EmptyState.jsx';
 
 function SortableWorkspaceBlock({ node, highlightedId, onHover }) {
   const {
@@ -51,8 +52,8 @@ export default function Workspace({ highlightedId, onHover }) {
         strategy={verticalListSortingStrategy}
       >
         {instances.length === 0 ? (
-          <div className="h-40 flex items-center justify-center text-center text-sm text-slate-500 border border-dashed border-base-border rounded-md">
-            Arraste blocos aqui para montar seu programa
+          <div className="h-40 flex items-center justify-center border border-dashed border-base-border rounded-md">
+            <EmptyState title="Arraste blocos aqui para montar seu programa" />
           </div>
         ) : (
           <div className="flex flex-col gap-2">
