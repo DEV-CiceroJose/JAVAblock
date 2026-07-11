@@ -80,7 +80,7 @@ export default function ProfessorChallengesPage() {
     <ProfessorLayout>
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold">Desafios</h2>
-        <Button onClick={openCreate}>Novo Desafio</Button>
+        <Button onClick={openCreate} accent="adminAccent">Novo Desafio</Button>
       </div>
 
       {error && (

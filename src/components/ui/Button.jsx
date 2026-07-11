@@ -4,12 +4,17 @@ const styles = {
   success: 'bg-emerald-500 hover:bg-emerald-600 text-white hover:shadow-lg hover:shadow-emerald-500/25 hover:scale-[1.02]'
 };
 
-export default function Button({ variant = 'primary', className = '', ...props }) {
+const ringStyles = {
+  accent: 'focus-visible:ring-accent',
+  adminAccent: 'focus-visible:ring-adminAccent'
+};
+
+export default function Button({ variant = 'primary', accent = 'accent', className = '', ...props }) {
   return (
     <button
       className={`px-4 py-2 rounded-lg font-medium transition-all disabled:opacity-40 disabled:hover:scale-100
         focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-base-bg
-        focus-visible:ring-accent ${styles[variant]} ${className}`}
+        ${ringStyles[accent]} ${styles[variant]} ${className}`}
       {...props}
     />
   );

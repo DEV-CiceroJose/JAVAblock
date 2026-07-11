@@ -8,7 +8,7 @@ export default function EmptyState({ title, description }) {
         <path d="M64 43 L50 43" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeDasharray="3 4" />
       </svg>
       <p className="text-sm text-slate-400">{title}</p>
-      {description && <p className="text-xs text-slate-600 mt-1">{description}</p>}
+      {description && <p className="text-xs text-slate-400 mt-1">{description}</p>}
     </div>
   );
 }

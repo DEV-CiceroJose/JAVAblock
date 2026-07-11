@@ -56,7 +56,7 @@ export default function ProfessorLogin() {
             />
           </label>
           {error && <div className="text-sm text-red-400 mb-4 break-words">{error}</div>}
-          <Button type="submit" disabled={loading || !tokenInput} className="w-full">
+          <Button type="submit" disabled={loading || !tokenInput} className="w-full" accent="adminAccent">
             {loading ? 'Verificando...' : 'Entrar'}
           </Button>
           <Link
