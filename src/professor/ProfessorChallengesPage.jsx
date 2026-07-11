@@ -4,6 +4,7 @@ import { useProfessorAuth } from './ProfessorAuthProvider.jsx';
 import { listChallengesAdmin, deleteChallenge, reorderChallenges } from '../services/adminApi.js';
 import ChallengeFormModal from './ChallengeFormModal.jsx';
 import Button from '../components/ui/Button.jsx';
+import EmptyState from '../components/ui/EmptyState.jsx';
 
 function sortChallenges(list) {
   return [...list].sort((a, b) => a.modulo - b.modulo || a.ordem - b.ordem);
@@ -91,7 +92,10 @@ export default function ProfessorChallengesPage() {
       {loading ? (
         <p className="text-slate-400 text-sm">Carregando...</p>
       ) : sorted.length === 0 ? (
-        <p className="text-slate-400 text-sm">Nenhum desafio cadastrado ainda.</p>
+        <EmptyState
+          title="Nenhum desafio cadastrado ainda."
+          description='Clique em "Novo Desafio" para começar.'
+        />
       ) : (
         <div className="bg-base-panel border border-base-border rounded-xl overflow-hidden overflow-x-auto">
           <table className="w-full text-sm">
