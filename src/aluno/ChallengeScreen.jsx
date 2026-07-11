@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   DndContext,
@@ -300,6 +301,11 @@ export default function ChallengeScreen() {
 
       <SuccessOverlay open={overlayOpen} xp={earnedXp} onNext={handleNext} isLast={isLast} />
       <Toast />
+      <div className="text-center mt-4">
+        <Link to="/professor" className="text-xs text-slate-600 hover:text-slate-400 transition">
+          Área do Professor →
+        </Link>
+      </div>
     </div>
   );
 }
