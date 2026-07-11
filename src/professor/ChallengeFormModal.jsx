@@ -365,7 +365,7 @@ export default function ChallengeFormModal({ open, challenge, onClose, onSaved }
             >
               Cancelar
             </button>
-            <Button type="submit" disabled={saving}>
+            <Button type="submit" disabled={saving} accent="adminAccent">
               {saving ? 'Salvando...' : 'Salvar'}
             </Button>
           </div>

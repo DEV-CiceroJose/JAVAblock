@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion';
 import { NavLink } from 'react-router-dom';
 import { useProfessorAuth } from './ProfessorAuthProvider.jsx';
 
@@ -13,9 +14,15 @@ export default function ProfessorLayout({ children }) {
   return (
     <div className="min-h-screen bg-base-bg text-slate-100 flex flex-col sm:flex-row">
       <aside className="sm:w-56 sm:shrink-0 sm:min-h-screen bg-base-panel border-b sm:border-b-0 sm:border-r border-base-border flex flex-col">
-        <div className="px-5 py-5 border-b border-base-border">
-          <span className="text-xs uppercase tracking-wide text-slate-500">JavaBlocks</span>
-          <h1 className="text-lg font-bold text-adminAccent">Painel do Professor</h1>
+        <div className="relative overflow-hidden px-5 py-5 border-b border-base-border">
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{ background: 'radial-gradient(circle at top left, rgba(139,92,246,0.15), transparent 70%)' }}
+          />
+          <div className="relative">
+            <span className="text-xs uppercase tracking-wide text-slate-500">JavaBlocks</span>
+            <h1 className="text-lg font-bold font-mono text-adminAccent">Painel do Professor</h1>
+          </div>
         </div>
         <nav className="flex-1 px-3 py-4 flex flex-row sm:flex-col gap-1 overflow-x-auto sm:overflow-visible">
           {NAV_ITEMS.map((item) => (
@@ -44,7 +51,15 @@ export default function ProfessorLayout({ children }) {
           </button>
         </div>
       </aside>
-      <main className="flex-1 overflow-y-auto p-6">{children}</main>
+      <main className="flex-1 overflow-y-auto p-6">
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25, ease: 'easeOut' }}
+        >
+          {children}
+        </motion.div>
+      </main>
     </div>
   );
 }

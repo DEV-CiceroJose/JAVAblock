@@ -85,7 +85,7 @@ export default function ProfessorConfigPage() {
             ))}
           </div>
           <div className="flex items-center gap-3">
-            <Button type="submit" disabled={saving}>
+            <Button type="submit" disabled={saving} accent="adminAccent">
               {saving ? 'Salvando...' : 'Salvar configurações'}
             </Button>
             {saved && <span className="text-sm text-emerald-400">Salvo!</span>}

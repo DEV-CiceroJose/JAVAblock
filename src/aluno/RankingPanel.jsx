@@ -30,7 +30,7 @@ export default function RankingPanel() {
             >
               <span className="w-5 text-center">{MEDALS[index] || index + 1}</span>
               <span className="font-medium">{grupo.nome}</span>
-              <span className="text-xs text-slate-400">{grupo.xp} XP</span>
+              <span className="text-xs text-slate-400 font-mono">{grupo.xp} XP</span>
             </motion.li>
           );
         })}
