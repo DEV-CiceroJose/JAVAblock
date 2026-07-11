@@ -60,3 +60,7 @@ export async function reorderChallenges(token, order) {
     body: JSON.stringify({ order })
   });
 }
+
+export async function getDashboard(token) {
+  return adminRequest('/api/admin/dashboard', token);
+}

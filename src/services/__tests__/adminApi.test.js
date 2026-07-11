@@ -106,3 +106,23 @@ describe('reorderChallenges', () => {
     expect(r.ok).toBe(true);
   });
 });
+
+import { getDashboard } from '../adminApi.js';
+
+describe('getDashboard', () => {
+  it('em sucesso devolve os dados agregados', async () => {
+    vi.stubEnv('VITE_API_URL', 'http://x');
+    const dados = {
+      ranking: [{ nome: 'A', xp: 10 }],
+      totalConcluidos: 5,
+      tempoMedioSeg: 90,
+      dicasUsadas: 2,
+      taxaAcerto: 0.8,
+      porCategoria: { geral: 80 }
+    };
+    global.fetch = vi.fn().mockResolvedValue({ ok: true, status: 200, json: async () => dados });
+    const r = await getDashboard('tok');
+    expect(r.ok).toBe(true);
+    expect(r.data).toEqual(dados);
+  });
+});

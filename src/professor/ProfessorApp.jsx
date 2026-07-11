@@ -3,6 +3,7 @@ import { ProfessorAuthProvider } from './ProfessorAuthProvider.jsx';
 import ProfessorLogin from './ProfessorLogin.jsx';
 import RequireProfessorAuth from './RequireProfessorAuth.jsx';
 import ProfessorChallengesPage from './ProfessorChallengesPage.jsx';
+import ProfessorDashboardPage from './ProfessorDashboardPage.jsx';
 
 export default function ProfessorApp() {
   return (
@@ -14,6 +15,14 @@ export default function ProfessorApp() {
           element={
             <RequireProfessorAuth>
               <ProfessorChallengesPage />
+            </RequireProfessorAuth>
+          }
+        />
+        <Route
+          path="dashboard"
+          element={
+            <RequireProfessorAuth>
+              <ProfessorDashboardPage />
             </RequireProfessorAuth>
           }
         />
