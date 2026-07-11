@@ -64,3 +64,14 @@ export async function reorderChallenges(token, order) {
 export async function getDashboard(token) {
   return adminRequest('/api/admin/dashboard', token);
 }
+
+export async function getAdminConfig(token) {
+  return adminRequest('/api/admin/config', token);
+}
+
+export async function setAdminConfig(token, patch) {
+  return adminRequest('/api/admin/config', token, {
+    method: 'PUT',
+    body: JSON.stringify(patch)
+  });
+}

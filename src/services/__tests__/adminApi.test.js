@@ -1,6 +1,8 @@
 // @vitest-environment jsdom
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { verifyAdminToken, listChallengesAdmin, createChallenge, updateChallenge, deleteChallenge, reorderChallenges } from '../adminApi.js';
+import { getDashboard } from '../adminApi.js';
+import { getAdminConfig, setAdminConfig } from '../adminApi.js';
 
 beforeEach(() => {
   vi.restoreAllMocks();
@@ -107,8 +109,6 @@ describe('reorderChallenges', () => {
   });
 });
 
-import { getDashboard } from '../adminApi.js';
-
 describe('getDashboard', () => {
   it('em sucesso devolve os dados agregados', async () => {
     vi.stubEnv('VITE_API_URL', 'http://x');
@@ -124,5 +124,30 @@ describe('getDashboard', () => {
     const r = await getDashboard('tok');
     expect(r.ok).toBe(true);
     expect(r.data).toEqual(dados);
+  });
+});
+
+describe('getAdminConfig', () => {
+  it('em sucesso devolve a config completa', async () => {
+    vi.stubEnv('VITE_API_URL', 'http://x');
+    const config = {
+      maxDicas: 3, penalidadePorDica: 15, tempoEntreDicasSeg: 15,
+      xpBase: 100, bonusPrimeira: 30, bonusSemDicas: 20,
+      penalidadeErro: 10, penalidadeProibido: 20
+    };
+    global.fetch = vi.fn().mockResolvedValue({ ok: true, status: 200, json: async () => config });
+    const r = await getAdminConfig('tok');
+    expect(r.ok).toBe(true);
+    expect(r.data).toEqual(config);
+  });
+});
+
+describe('setAdminConfig', () => {
+  it('envia o patch e devolve a config atualizada', async () => {
+    vi.stubEnv('VITE_API_URL', 'http://x');
+    global.fetch = vi.fn().mockResolvedValue({ ok: true, status: 200, json: async () => ({ maxDicas: 5 }) });
+    const r = await setAdminConfig('tok', { maxDicas: 5 });
+    expect(r.ok).toBe(true);
+    expect(r.data.maxDicas).toBe(5);
   });
 });

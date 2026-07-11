@@ -4,6 +4,7 @@ import ProfessorLogin from './ProfessorLogin.jsx';
 import RequireProfessorAuth from './RequireProfessorAuth.jsx';
 import ProfessorChallengesPage from './ProfessorChallengesPage.jsx';
 import ProfessorDashboardPage from './ProfessorDashboardPage.jsx';
+import ProfessorConfigPage from './ProfessorConfigPage.jsx';
 
 export default function ProfessorApp() {
   return (
@@ -23,6 +24,14 @@ export default function ProfessorApp() {
           element={
             <RequireProfessorAuth>
               <ProfessorDashboardPage />
+            </RequireProfessorAuth>
+          }
+        />
+        <Route
+          path="config"
+          element={
+            <RequireProfessorAuth>
+              <ProfessorConfigPage />
             </RequireProfessorAuth>
           }
         />
